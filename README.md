@@ -1,2 +1,2 @@
 # tufani-typing
-Improve your!
+Improve your typing speed
