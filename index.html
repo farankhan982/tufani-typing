@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUFANI TYPING - 100 Unique Levels RPG Typing Battle</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=JetBrains+Mono:wght@500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Linking CSS File -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Particle & Confetti Canvas -->
+    <canvas id="fx-canvas"></canvas>
+
+    <!-- Red Screen Flash Overlay -->
+    <div id="damage-overlay"></div>
+
+    <!-- ==================== 0. SETUP / PROFILE MODAL (First Time Open) ==================== -->
+    <div id="setup-modal" class="modal-overlay hidden">
+        <div class="modal-card setup-card">
+            <div class="win-banner">⚡ WELCOME WARRIOR ⚡</div>
+            <h2>ENTER YOUR PROFILE</h2>
+            <p class="modal-sub">Choose your name and pick your battle avatar to begin!</p>
+            
+            <div class="input-group">
+                <input type="text" id="player-name-input" placeholder="Enter your name..." maxlength="15" autocomplete="off">
+            </div>
+
+            <label class="avatar-label">Select Your Hero Avatar:</label>
+            <div class="avatar-selection-grid" id="avatar-grid">
+                <!-- Avatars will be injected via JS -->
+            </div>
+
+            <button id="btn-save-profile" class="btn btn-primary btn-glow" style="margin-top: 20px; width: 100%;">START YOUR QUEST ➔</button>
+        </div>
+    </div>
+
+    <!-- ==================== 1. MAIN MENU SCREEN ==================== -->
+    <section id="menu-screen" class="screen active">
+        <div class="menu-box">
+            <div class="badge-tag">⚡ 100 LEVELS RPG TYPING GAME ⚡</div>
+            <h1 class="game-title">TUFANI <span>TYPING</span></h1>
+            <p class="game-subtitle">Type Fast to Attack! Make a Mistake and the Enemy Strikes Back!</p>
+
+            <div class="player-profile-badge" id="profile-badge-btn" title="Click to change profile">
+                <span id="display-player-avatar">🥷</span>
+                <span id="display-player-name">Warrior</span>
+                <small>✏️ Change</small>
+            </div>
+
+            <div class="menu-stats">
+                <div class="stat-pill">
+                    <span class="stat-label">Unlocked Level</span>
+                    <span id="menu-unlocked-lvl" class="stat-num">1 / 100</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-label">Total Stars</span>
+                    <span id="menu-total-stars" class="stat-num">⭐ 0 / 300</span>
+                </div>
+            </div>
+
+            <div class="menu-buttons">
+                <button id="btn-continue" class="btn btn-primary btn-glow">⚔️ PLAY NOW (CONTINUE)</button>
+                <button id="btn-levels" class="btn btn-secondary">🗺️ SELECT LEVEL (1 - 100)</button>
+                <button id="btn-sound" class="btn btn-outline">🔊 SOUND: ON</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 2. LEVEL SELECT SCREEN ==================== -->
+    <section id="level-screen" class="screen">
+        <div class="top-nav">
+            <button id="btn-back-menu" class="btn btn-small">⬅ Back to Menu</button>
+            <h2 class="section-title">SELECT LEVEL (1 - 100)</h2>
+            <div class="nav-right">
+                <span id="map-stars-display" class="stars-counter">⭐ 0 / 300</span>
+                <button id="btn-reset-save" class="btn btn-danger btn-small">🗑️ Reset Progress</button>
+            </div>
+        </div>
+
+        <div class="level-grid-wrapper">
+            <div id="level-grid" class="level-grid"></div>
+        </div>
+    </section>
+
+    <!-- ==================== 3. MAIN GAME & BATTLE SCREEN ==================== -->
+    <section id="game-screen" class="screen">
+        
+        <header class="game-hud">
+            <button id="btn-quit-level" class="btn btn-small">⬅ Map</button>
+            
+            <div class="hud-level-badge">
+                <span id="hud-level-text">LEVEL 1</span>
+                <span id="hud-boss-tag" class="boss-tag hidden">🔥 BOSS FIGHT</span>
+            </div>
+
+            <div class="hud-metrics">
+                <div class="metric-box">
+                    <span class="m-label">⏱️ TIME LEFT</span>
+                    <span id="hud-timer" class="m-val">60s</span>
+                </div>
+                <div class="metric-box">
+                    <span class="m-label">⚡ SPEED (WPM)</span>
+                    <span id="hud-wpm" class="m-val">0</span>
+                    <small id="hud-target-wpm" class="m-sub">Target: 20</small>
+                </div>
+                <div class="metric-box">
+                    <span class="m-label">🎯 ACCURACY</span>
+                    <span id="hud-accuracy" class="m-val">100%</span>
+                    <small class="m-sub">Target: 95%</small>
+                </div>
+            </div>
+        </header>
+
+        <!-- TOP HALF: BATTLE ARENA -->
+        <div id="battle-arena" class="battle-arena">
+            <div class="arena-bg-grid"></div>
+
+            <!-- Left: Player Hero -->
+            <div class="fighter-card hero-side">
+                <div class="fighter-info">
+                    <div class="fighter-name-row">
+                        <span id="hero-display-name" class="f-name">⚡ HERO</span>
+                        <span id="hero-hp-text" class="hp-numbers">100 / 100 HP</span>
+                    </div>
+                    <div class="hp-bar-outer">
+                        <div id="hero-hp-fill" class="hp-bar-inner hero-hp"></div>
+                    </div>
+                </div>
+                <div id="hero-sprite" class="fighter-sprite hero-idle">
+                    <div id="hero-avatar-icon" class="avatar-circle hero-avatar">🥷</div>
+                    <div class="weapon-glow">⚡</div>
+                </div>
+                <div id="hero-dmg-popup" class="dmg-popup"></div>
+            </div>
+
+            <!-- Center: Action / Combo Indicator -->
+            <div class="arena-center">
+                <div id="combo-badge" class="combo-badge">COMBO x0</div>
+                <div id="battle-status-msg" class="battle-msg">Type the sentence to launch your attack!</div>
+                <div id="projectile" class="projectile"></div>
+            </div>
+
+            <!-- Right: Enemy Monster -->
+            <div class="fighter-card enemy-side">
+                <div class="fighter-info">
+                    <div class="fighter-name-row">
+                        <span id="enemy-name" class="f-name">👾 SHADOW BOT</span>
+                        <span id="enemy-hp-text" class="hp-numbers">100 / 100 HP</span>
+                    </div>
+                    <div class="hp-bar-outer">
+                        <div id="enemy-hp-fill" class="hp-bar-inner enemy-hp"></div>
+                    </div>
+                </div>
+                <div id="enemy-sprite" class="fighter-sprite enemy-idle">
+                    <div id="enemy-emoji" class="avatar-circle enemy-avatar">👾</div>
+                </div>
+                <div id="enemy-dmg-popup" class="dmg-popup"></div>
+            </div>
+        </div>
+
+        <!-- BOTTOM HALF: TYPING ZONE -->
+        <div class="typing-container">
+            <div class="typing-header">
+                <span>⌨️ Type the glowing sentence below (Mistakes deal damage to your HP!)</span>
+                <span id="progress-percent">0% Completed</span>
+            </div>
+
+            <div id="text-display" class="text-display"></div>
+
+            <div class="typing-progress-bar">
+                <div id="typing-progress-fill"></div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ==================== 4. VICTORY MODAL ==================== -->
+    <div id="win-modal" class="modal-overlay hidden">
+        <div class="modal-card win-card">
+            <div class="win-banner">🏆 VICTORY! ENEMY DEFEATED!</div>
+            <h2 id="win-level-title">LEVEL 1 CLEARED</h2>
+
+            <div class="stars-showcase">
+                <div id="star-1" class="star-item">
+                    <div class="star-icon">⭐</div>
+                    <div class="star-label">Beat in Time</div>
+                </div>
+                <div id="star-2" class="star-item">
+                    <div class="star-icon">⭐</div>
+                    <div class="star-label">Accuracy ≥ 95%</div>
+                </div>
+                <div id="star-3" class="star-item">
+                    <div class="star-icon">⭐</div>
+                    <div class="star-label" id="star-3-desc">Target WPM</div>
+                </div>
+            </div>
+
+            <div class="result-stats-grid">
+                <div class="res-box">
+                    <span>Speed</span>
+                    <strong id="win-wpm">0 WPM</strong>
+                </div>
+                <div class="res-box">
+                    <span>Accuracy</span>
+                    <strong id="win-acc">100%</strong>
+                </div>
+                <div class="res-box">
+                    <span>Time Left</span>
+                    <strong id="win-time">0s</strong>
+                </div>
+                <div class="res-box">
+                    <span>Hero HP</span>
+                    <strong id="win-hp">100%</strong>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button id="btn-win-replay" class="btn btn-secondary">🔄 Replay</button>
+                <button id="btn-win-map" class="btn btn-outline">🗺️ Level Map</button>
+                <button id="btn-win-next" class="btn btn-primary btn-glow">Next Level ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 5. DEFEAT MODAL ==================== -->
+    <div id="lose-modal" class="modal-overlay hidden">
+        <div class="modal-card lose-card">
+            <div class="lose-skull">💀</div>
+            <h2 class="glitch-title">TUFANI DEFEAT!</h2>
+            <p id="lose-reason" class="lose-reason-text">Your Health Dropped to Zero!</p>
+
+            <div class="result-stats-grid">
+                <div class="res-box">
+                    <span>Speed</span>
+                    <strong id="lose-wpm">0 WPM</strong>
+                </div>
+                <div class="res-box">
+                    <span>Accuracy</span>
+                    <strong id="lose-acc">0%</strong>
+                </div>
+                <div class="res-box">
+                    <span>Completed</span>
+                    <strong id="lose-prog">0%</strong>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button id="btn-lose-map" class="btn btn-outline">🗺️ Level Map</button>
+                <button id="btn-lose-retry" class="btn btn-danger btn-glow">⚔️ Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Linking JavaScript File -->
+    <script src="script.js"></script>
+</body>
+</html>
