@@ -117,7 +117,7 @@ function getUniqueSentence(lvl) {
         /* 20 */ `[BOSS LEVEL 20]: Cyber Drone Mk-2 activates heavy armor! Break through {}.`,
 
         /* 21 */ `Programming your brain for speed requires consistent daily practice {code && play}.`,
-        /* 22 */ `The venom spider crawls closer [🕷️] as seconds slip away from the clock.`,
+        /* 22 */ `The venom spider crawls closer [] as seconds slip away from the clock.`,
         /* 23 */ `Maintain a steady rhythm [1-2-3] to keep your combo multiplier safe from resets.`,
         /* 24 */ `A true gamer never looks down at the keyboard during an epic {boss} fight.`,
         /* 25 */ `Unlock the 3-star rating [] by mastering both time limits and accuracy.`,
